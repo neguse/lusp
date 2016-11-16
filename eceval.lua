@@ -68,9 +68,10 @@ function eval_dispatch()
 		return ev_begin
 	end
 	if application_p(exp) then
-		ev_application
+		return ev_application
 	end
 	return unknown_expression_type
+end
 
 function ev_self_eval()
 	val = exp
@@ -83,7 +84,7 @@ function ev_variable()
 end
 
 function ev_quoted()
-	val = (text_of_quotation(exp)
+	val = text_of_quotation(exp)
 	return continue
 end
 
@@ -100,7 +101,7 @@ function ev_application()
 	unev = operands(exp)
 	save(unev)
 	exp = operator(exp)
-	continue = (ev_appl_did_operator
+	continue = ev_appl_did_operator
 	return eval_dispatch
 end
 
@@ -114,6 +115,7 @@ function ev_appl_did_operator()
 	end
 	save(proc)
 	return ev_appl_operand_loop
+end
 
 function ev_appl_operand_loop()
 	save(argl)
@@ -146,6 +148,7 @@ function ev_appl_accum_last_arg()
 	argl = adjoin_arg(val, argl)
 	proc = restore()
 	return apply_dispatch
+end
 
 function apply_dispatch()
 	if primitive_procedure_p(proc) then
@@ -180,7 +183,7 @@ end
 function ev_sequence()
 	exp = first_exp(unev)
 	if last_exp_p(unev) then
-		return ev_sequence_last_exp)
+		return ev_sequence_last_exp
 	end
 	save(unev)
 	save(env)
@@ -215,6 +218,7 @@ function ev_if_decide()
 	exp = restore()
 	if true_p(val) then
 		return ev_if_consequent
+	end
 	return ev_if_alternative
 end
 
