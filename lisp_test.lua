@@ -1,6 +1,6 @@
 
 require("busted.runner")
-require("types")
+require("lisp")
 
 describe("symbol test", function()
 
@@ -58,3 +58,12 @@ describe("types test", function()
 		assert.are.equal(ltype({}), 'unknown')
 	end)
 end)
+
+describe("list test", function()
+	it("tests", function()
+		assert.are.same(list(), nil)
+		assert.are.same(list(1), Cons.new(1, nil))
+		assert.are.same(list(1, 2), Cons.new(1, Cons.new(2, nil)))
+	end)
+end)
+
