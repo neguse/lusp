@@ -25,3 +25,23 @@ function procedure_environment(p)
 	return cadddr(p)
 end
 
+
+function make_frame(vars, vals)
+	return Cons.new(vars, vals)
+end
+function frame_variables(frame)
+	return car(frame)
+end
+function frame_values(frame)
+	return cdr(frame)
+end
+function extend_environment(vars, vals, base_env)
+	if length(vars) == length(vals) then
+		return make_frame(vars, vals)
+	elseif length(vars) < length(vals) then
+		error("Too many arguments supplied " .. tostring(vars) .. tostring(vals))
+	else
+		error("Too few arguments supplied " .. tostring(vars) .. tostring(vals))
+	end
+end
+
