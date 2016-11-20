@@ -41,3 +41,18 @@ function Cons:set_cdr(d)
 	self[2] = d
 end
 
+function ltype(v)
+	t = type(v)
+	if t ~= 'table' then
+		return t
+	else
+		meta = getmetatable(v)
+		if meta == Symbol then
+			return 'symbol'
+		elseif meta == Cons then
+			return 'cons'
+		end
+		return 'unknown'
+	end
+end
+
