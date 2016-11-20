@@ -26,6 +26,13 @@ function procedure_environment(p)
 end
 
 
+function enclosing_environment(env)
+	return cdr(env)
+end
+function first_frame(env)
+	return car(env)
+end
+the_empty_environment = nil
 function make_frame(vars, vals)
 	return Cons.new(vars, vals)
 end
@@ -35,6 +42,10 @@ end
 function frame_values(frame)
 	return cdr(frame)
 end
+function add_binding_to_frame(var, val, frame)
+	set_car(frame, Cons.new(var, car(frame)))
+	set_cdr(frame, Cons.new(val, cdr(frame)))
+end
 function extend_environment(vars, vals, base_env)
 	if length(vars) == length(vals) then
 		return make_frame(vars, vals)
@@ -43,5 +54,60 @@ function extend_environment(vars, vals, base_env)
 	else
 		error("Too few arguments supplied " .. tostring(vars) .. tostring(vals))
 	end
+end
+function lookup_variable_value(var, env)
+	local env_loop = function(env)
+		local scan = function(vars, vals)
+			if null_p(vars) then
+				return env_loop(enclosing_environment, env)
+			elseif var == car(vars) then
+				return car(vals)
+			else
+				scan(cdr(vars), cdr(vals))
+			end
+		end
+		if env == the_empty_environment then
+			error("Unbound variable " .. tostring(var))
+		else
+			frame = first_frame(env)
+			scan(frame_variables(frame), frame_values(frame))
+		end
+	end
+	env_loop(env)
+end
+
+function set_variable_value(var, val, env)
+	local env_loop = function(env)
+		local scan = function(vars, vals)
+			if null_p(vars) then
+				return env_loop(enclosing_environment, env)
+			elseif var == car(vars) then
+				set_car(vals, val)
+			else
+				scan(cdr(vars), cdr(vals))
+			end
+		end
+		if env == the_empty_environment then
+			error("Unbound variable -- SET!" .. tostring(var))
+		else
+			frame = first_frame(env)
+			scan(frame_variables(frame), frame_values(frame))
+		end
+	end
+	env_loop(env)
+end
+
+function define_variable(var, val, env)
+	frame = first_frame(env)
+	local scan = function(vars, vals)
+		if null_p(vars) then
+			add_binding_to_frame(var, val, frame)
+		elseif var == car(vars) then
+			set_car(vals, val)
+		else
+			scan(cdr(vars), cdr(vals))
+		end
+	end
+	scan(frame_variables(frame), frame_values(frame))
 end
 

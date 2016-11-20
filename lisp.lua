@@ -66,6 +66,15 @@ function cadddr(l)
 	return car(cdr(cdr(cdr(l))))
 end
 
+function set_car(l, a)
+	assert(pair_p(l), 'requires pair')
+	l:set_car(l, a)
+end
+function set_cdr(l, d)
+	assert(pair_p(l), 'requires pair')
+	l:set_cdr(l, d)
+end
+
 function list(...)
 	l = {...}
 	if #l == 0 then
