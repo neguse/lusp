@@ -1,16 +1,6 @@
 
 require("lisp")
 
-function true_p(e)
-	return e == true
-end
-function false_p(e)
-	return e == false
-end
-function pair_p(l)
-	return ltype(l) == 'cons'
-end
-
 function tagged_list_p(l, tag)
 	if pair_p(l) then
 		return l:car() == tag

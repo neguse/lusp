@@ -1,4 +1,20 @@
 
+function true_p(e)
+	return e == true
+end
+function false_p(e)
+	return e == false
+end
+function pair_p(l)
+	return type(l) == 'table' and getmetatable(l) == Cons
+end
+function list_p(l)
+	return null_p(l) or pair_p(l)
+end
+function null_p(l)
+	return l == nil
+end
+
 -- Symbol
 Symbol = {}
 Symbol.__index = Symbol
@@ -31,29 +47,13 @@ function Cons:set_cdr(d)
 	self[2] = d
 end
 
--- returns type
-function ltype(v)
-	t = type(v)
-	if t ~= 'table' then
-		return t
-	else
-		meta = getmetatable(v)
-		if meta == Symbol then
-			return 'symbol'
-		elseif meta == Cons then
-			return 'cons'
-		end
-		return 'unknown'
-	end
-end
-
 -- functions
 function car(l)
-	assert(ltype(l) == 'cons', 'requires cons')
+	assert(pair_p(l), 'requires pair')
 	return l:car()
 end
 function cdr(l)
-	assert(ltype(l) == 'cons', 'requires cons')
+	assert(pair_p(l), 'requires pair')
 	return l:cdr()
 end
 function cadr(l)
@@ -72,6 +72,15 @@ function list(...)
 		return nil
 	else
 		return Cons.new(l[1], list(unpack(l, 2)))
+	end
+end
+
+function length(e)
+	assert(list_p(e), 'requires list')
+	if null_p(e) then
+		return 0
+	else
+		return 1 + length(cdr(e))
 	end
 end
 
