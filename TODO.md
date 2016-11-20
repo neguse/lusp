@@ -1,9 +1,31 @@
 
-# primitive Scheme operations
+# Implement data types
 
+- nil
+- boolean
+- number
+- string
+- symbol
+- cons
+
+# Implement operations
+
+## primitive Scheme operations
+
+- car
+- cdr
+- cons
+- null_p
+- +
+- -
+- *
+- =
+- /
+- >
+- <
 - read
 
-# operations in syntax.scm 
+## operations in syntax.scm 
 
 - self_evaluating_p
 - quoted_p
@@ -34,7 +56,7 @@
 - first_operand
 - rest_operands
 
-# operations in eceval-support.scm
+## operations in eceval-support.scm
 
 - true_p
 - make_procedure
