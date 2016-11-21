@@ -129,7 +129,7 @@ primitive_procedures = list(
 	list(Symbol.new('/'), div),
 	list(Symbol.new('='), eql),
 	list(Symbol.new('>'), gt),
-	list(Symbol.new('<'), lt),)
+	list(Symbol.new('<'), lt))
 
 function primitive_procedure_names()
 	return map(car, primitive_procedures)
@@ -143,7 +143,7 @@ function primitive_procedure_objects()
 end
 
 function lunpack(args)
-	if not null_p(args)
+	if not null_p(args) then
 		return car(args), lunpack(cdr(args))
 	end
 end
