@@ -2,6 +2,19 @@
 require("lisp")
 require("support")
 
+-- stack
+the_stack = {}
+function initialize_stack()
+	the_stack = {}
+end
+function save(e)
+	table.insert(the_stack, e)
+end
+function restore()
+	assert(#the_stack > 0)
+	return table.remove(the_stack)
+end
+
 -- translate from SICP ch5-eceval.scm.
 
 -- Use trampoline to emulate goto statement.
@@ -23,15 +36,15 @@ function read_eval_print_loop()
 end
 
 function print_result()
-  print_stack_statistics()
-  announce_output(";;; EC-Eval value:")
-  user_print(val)
-  return read_eval_print_loop
+	-- print_stack_statistics()
+	announce_output(";;; EC-Eval value:")
+	user_print(val)
+	return read_eval_print_loop
 end
 
 function unknown_expression_type()
-  val = unknown_expression_type_error
-  return signal_error
+	val = unknown_expression_type_error
+	return signal_error
 end
 
 function unknown_procedure_type()
