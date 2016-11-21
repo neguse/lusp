@@ -17,6 +17,12 @@ end
 function symbol_p(l)
 	return type(l) == 'table' and getmetatable(l) == Symbol
 end
+function number_p(l)
+	return type(l) == 'number'
+end
+function string_p(l)
+	return type(l) == 'string'
+end
 
 -- Symbol
 Symbol = {}
@@ -79,11 +85,17 @@ function set_cdr(l, d)
 end
 
 function list(...)
-	l = {...}
+	local l = {...}
 	if #l == 0 then
 		return nil
 	else
 		return Cons.new(l[1], list(unpack(l, 2)))
+	end
+end
+
+function lunpack(args)
+	if not null_p(args) then
+		return car(args), lunpack(cdr(args))
 	end
 end
 
@@ -113,7 +125,7 @@ function append(l1, l2)
 end
 
 function add(...)
-	s = 0
+	local s = 0
 	for i, v in ipairs({...}) do
 		s = s + v
 	end
@@ -121,12 +133,12 @@ function add(...)
 end
 
 function sub(...)
-	l = {...}
+	local l = {...}
 	assert(#l > 0, 'sub() requires at least 1 element')
 	if #l == 1 then
 		return -l[1]
 	else
-		s = table.remove(l, 1)
+		local s = table.remove(l, 1)
 		for i, v in ipairs(l) do
 			s = s - v
 		end
@@ -135,7 +147,7 @@ function sub(...)
 end
 
 function mul(...)
-	s = 1
+	local s = 1
 	for i, v in ipairs({...}) do
 		s = s * v
 	end
@@ -143,12 +155,12 @@ function mul(...)
 end
 
 function div(...)
-	l = {...}
+	local l = {...}
 	assert(#l > 0, 'div() requires at least 1 element')
 	if #l == 1 then
 		return 1 / l[1]
 	else
-		s = table.remove(l, 1)
+		local s = table.remove(l, 1)
 		for i, v in ipairs(l) do
 			s = s / v
 		end
@@ -157,9 +169,9 @@ function div(...)
 end
 
 function eql(...)
-	l = {...}
+	local l = {...}
 	assert(#l > 0, 'eql() requires at least 2 elements')
-	s = table.remove(l, 1)
+	local s = table.remove(l, 1)
 	for i, v in ipairs(l) do
 		if s ~= v then
 			return false
@@ -169,9 +181,9 @@ function eql(...)
 end
 
 function gt(...)
-	l = {...}
+	local l = {...}
 	assert(#l > 0, 'gt() requires at least 2 elements')
-	s = table.remove(l, 1)
+	local s = table.remove(l, 1)
 	for i, v in ipairs(l) do
 		if s <= v then
 			return false
@@ -182,9 +194,9 @@ function gt(...)
 end
 
 function lt(...)
-	l = {...}
+	local l = {...}
 	assert(#l > 0, 'lt() requires at least 2 elements')
-	s = table.remove(l, 1)
+	local s = table.remove(l, 1)
 	for i, v in ipairs(l) do
 		if s >= v then
 			return false
@@ -196,11 +208,107 @@ end
 
 function pretty(e)
 	if symbol_p(e) then
-		return "'" .. tostring(e)
+		return tostring(e)
 	elseif list_p(e) then
 		return '(' .. table.concat({lunpack(map(pretty, e))}, ' ') .. ')'
 	else
 		return tostring(e)
+	end
+end
+
+Reader = {}
+Reader.__index = Reader
+function Reader.new(file)
+	return setmetatable({io = io.input(file), buf=nil}, Reader)
+end
+function Reader:read()
+	if self.buf == nil or string.len(self.buf) == 0 then
+		self.buf = self.io:read('*l')
+		if self.buf == nil then
+			return nil
+		end
+	end
+	local c = string.sub(self.buf, 1, 1)
+	self.buf = string.sub(self.buf, 2)
+	return c
+end
+function Reader:peek()
+	if self.buf == nil or string.len(self.buf) == 0 then
+		self.buf = self.io:read('*l')
+		if self.buf == nil then
+			return nil
+		else
+			self.buf = self.buf .. '\n'
+		end
+	end
+	return string.sub(self.buf, 1, 1)
+end
+
+function is_space(s)
+	return s == ' ' or s == '\n' or s == '\t'
+end
+
+function is_delimiter(s)
+	return is_space(s) or s == '(' or s == ')' or s == "'"
+end
+
+function skip_spaces(r)
+	while is_space(r:peek()) do
+		r:read()
+	end
+end
+
+global_reader = Reader.new()
+
+function read()
+	local r = global_reader
+	skip_spaces(r)
+	local c = r:peek()
+	if c == nil then
+		return nil
+	end
+	assert(c ~= ')')
+	if c == '(' then
+		r:read()
+		return read_list(r)
+	elseif c == "'" then
+		r:read()
+		return list(Symbol.new('quote'), read(r))
+	else
+		return read_atom(r)
+	end
+end
+
+function read_list(r)
+	local items = {}
+	while true do
+		skip_spaces(r)
+		local c = r:peek()
+		assert(c ~= nil)
+		if c == ')' then
+			break
+		end
+		table.insert(items, read(r))
+	end
+	return list(unpack(items))
+end
+
+function read_atom(r)
+	local buf = ''
+	while true do
+		local c = r:peek()
+		if is_delimiter(c) or c == nil then
+			break
+		end
+		buf = buf .. c
+		r:read()
+	end
+	assert(string.len(buf) > 0)
+	local num = tonumber(buf)
+	if num ~= nil then
+		return num
+	else
+		return Symbol.new(buf)
 	end
 end
 

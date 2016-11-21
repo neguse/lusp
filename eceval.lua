@@ -1,4 +1,7 @@
 
+require("lisp")
+require("support")
+
 -- translate from SICP ch5-eceval.scm.
 
 -- Use trampoline to emulate goto statement.
@@ -269,4 +272,6 @@ function ev_definition_1()
 	val = ok
 	return continue
 end
+
+eceval()
 

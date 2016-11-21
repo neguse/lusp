@@ -151,12 +151,6 @@ function primitive_procedure_objects()
 	return map(f, primitive_procedures)
 end
 
-function lunpack(args)
-	if not null_p(args) then
-		return car(args), lunpack(cdr(args))
-	end
-end
-
 function apply_primitive_procedure(proc, args)
 	return primitive_implementation(proc)(lunpack(args))
 end
