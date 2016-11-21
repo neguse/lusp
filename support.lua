@@ -48,7 +48,7 @@ function add_binding_to_frame(var, val, frame)
 end
 function extend_environment(vars, vals, base_env)
 	if length(vars) == length(vals) then
-		return make_frame(vars, vals)
+		return Cons.new(make_frame(vars, vals), base_env)
 	elseif length(vars) < length(vals) then
 		error("Too many arguments supplied " .. tostring(vars) .. tostring(vals))
 	else
@@ -99,7 +99,8 @@ end
 
 function define_variable(var, val, env)
 	frame = first_frame(env)
-	local scan = function(vars, vals)
+	local scan
+	scan = function(vars, vals)
 		if null_p(vars) then
 			add_binding_to_frame(var, val, frame)
 		elseif var == car(vars) then
@@ -111,7 +112,15 @@ function define_variable(var, val, env)
 	scan(frame_variables(frame), frame_values(frame))
 end
 
-
+function setup_environment()
+	initial_env = extend_environment(
+		primitive_procedure_names(),
+		primitive_procedure_objects(),
+		the_empty_environment)
+	define_variable(Symbol.new('true'), true, initial_env)
+	define_variable(Symbol.new('false'), false, initial_env)
+	return initial_env
+end
 function primitive_procedure_p(p)
 	return tagged_list_p(p, Symbol.new('primitive'))
 end
@@ -170,3 +179,23 @@ function user_print(object)
 	end
 end
 
+function empty_arglist()
+	return nil
+end
+function adjoin_arg(arg, arglist)
+	append(arglist, list(arg))
+end
+
+function last_operand_p(ops)
+	return null_p(cdr(ops))
+end
+
+function no_more_exps_p(seq)
+	null_p(seq)
+end
+
+the_global_environment = setup_environment()
+
+function get_global_environment()
+	return the_global_environment
+end

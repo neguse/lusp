@@ -31,9 +31,3 @@ describe("compound_procedure test", function()
 	assert.are.equal(procedure_environment(p), 'env')
 end)
 
-describe("extend_environment test", function()
-	frame = extend_environment(list(1), list(2))
-	assert.are.same(frame_variables(frame), list(1))
-	assert.are.same(frame_values(frame), list(2))
-end)
-
