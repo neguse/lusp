@@ -84,6 +84,14 @@ function list(...)
 	end
 end
 
+function map(proc, l)
+	if null_p(l) then
+		return nil
+	else
+		return Cons.new(proc(car(l)), map(proc, cdr(l)))
+	end
+end
+
 function length(e)
 	assert(list_p(e), 'requires list')
 	if null_p(e) then

@@ -111,3 +111,44 @@ function define_variable(var, val, env)
 	scan(frame_variables(frame), frame_values(frame))
 end
 
+
+function primitive_procedure_p(p)
+	return tagged_list_p(p, Symbol.new('primitive'))
+end
+function primitive_implementation(proc)
+	return cadr(proc)
+end
+primitive_procedures = list(
+	list(Symbol.new('car'), car),
+	list(Symbol.new('cdr'), cdr),
+	list(Symbol.new('cons'), Cons.new),
+	list(Symbol.new('null?'), null_p),
+	list(Symbol.new('+'), add),
+	list(Symbol.new('-'), sub),
+	list(Symbol.new('*'), mul),
+	list(Symbol.new('/'), div),
+	list(Symbol.new('='), eql),
+	list(Symbol.new('>'), gt),
+	list(Symbol.new('<'), lt),)
+
+function primitive_procedure_names()
+	return map(car, primitive_procedures)
+end
+
+function primitive_procedure_objects()
+	f = function(proc)
+		return list(Symbol.new('primitive'), cadr(proc))
+	end
+	return map(f, primitive_procedures)
+end
+
+function lunpack(args)
+	if not null_p(args)
+		return car(args), lunpack(cdr(args))
+	end
+end
+
+function apply_primitive_procedure(proc, args)
+	return primitive_implementation(proc)(lunpack(args))
+end
+
