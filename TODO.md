@@ -66,8 +66,8 @@
 - procedure_environment
 - extend_environment
 - lookup_variable_value
-- set_variable_value!
-- define_variable!
+- set_variable_value
+- define_variable
 - primitive_procedure_p
 - apply_primitive_procedure
 - prompt_for_input
