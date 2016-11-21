@@ -152,3 +152,21 @@ function apply_primitive_procedure(proc, args)
 	return primitive_implementation(proc)(lunpack(args))
 end
 
+function prompt_for_input(str)
+	print("\n\n" .. str .. "\n")
+end
+function announce_output(str)
+	print("\n" .. str .. "\n")
+end
+function user_print(object)
+	if compound_procedure_p(object) then
+		print(list(
+				Symbol.new('compound-procedure'),
+				procedure_parameters(object),
+				procedure_body(object),
+				Symbol.new('<procedure-env>')))
+	else
+		print(object)
+	end
+end
+
