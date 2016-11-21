@@ -199,3 +199,119 @@ the_global_environment = setup_environment()
 function get_global_environment()
 	return the_global_environment
 end
+
+
+-- syntax
+
+function self_evaluating_p(exp)
+	return number_p(exp) or string_p(exp)
+end
+
+function quoted_p(exp)
+	return tagged_list_p(exp, Symbol.new('quote'))
+end
+function text_of_quotation(exp)
+	return cadr(exp)
+end
+
+function variable_p(exp)
+	return symbol_p(exp)
+end
+
+function assignment_p(exp)
+	return tagged_list_p(exp, Symbol.new('set!'))
+end
+function assignment_variable(exp)
+	return cadr(exp)
+end
+function assignment_value(exp)
+	return caddr(exp)
+end
+
+function definition_p(exp)
+	return tagged_list_p(exp, Symbol.new('define'))
+end
+function definition_variable(exp)
+	if symbol_p(cadr(exp)) then
+		return cadr(exp)
+	else
+		return caddr(exp)
+	end
+end
+function definition_value(exp)
+	if symbol_p(cadr(exp)) then
+		return caddr(exp)
+	else
+		return make_lambda(caddr(exp), cddr(exp))
+	end
+end
+
+function lambda_p(exp)
+	return tagged_list_p(exp, Symbol.new('lambda'))
+end
+function lambda_parameters(exp)
+	return cadr(exp)
+end
+function lambda_body(exp)
+	return cddr(exp)
+end
+
+function make_lambda(parameters, body)
+	return Cons.new(Symbol.new('lambda'), Cons.new(parameters, body))
+end
+
+function if_p(exp)
+	return tagged_list_p(exp, Symbol.new('if'))
+end
+function if_predicate(exp)
+	return cadr(exp)
+end
+function if_consequent(exp)
+	return caddr(exp)
+end
+function if_alternative(exp)
+	if not null_p(cdddr(exp)) then
+		return cadddr(exp)
+	else
+		return Symbol.new('false')
+	end
+end
+
+function begin_p(exp)
+	return tagged_list_p(exp, Symbol.new('begin'))
+end
+function begin_actions(exp)
+	return cdr(exp)
+end
+
+function last_exp_p(seq)
+	return null_p(cdr(seq))
+end
+function first_exp(seq)
+	return car(seq)
+end
+function rest_seq(seq)
+	return cdr(seq)
+end
+
+function application_p(exp)
+	return pair_p(exp)
+end
+function operator(exp)
+	return car(exp)
+end
+function operands(exp)
+	return cdr(exp)
+end
+
+function no_operands_p(ops)
+	return null_p(ops)
+end
+function first_operand(ops)
+	return car(ops)
+end
+function rest_operands(ops)
+	return cdr(ops)
+end
+
+
