@@ -74,6 +74,12 @@ end
 function cadddr(l)
 	return car(cdr(cdr(cdr(l))))
 end
+function cddr(l)
+	return cdr(cdr(l))
+end
+function cdddr(l)
+	return cdr(cdr(cdr(l)))
+end
 
 function set_car(l, a)
 	assert(pair_p(l), 'requires pair')
@@ -117,6 +123,8 @@ function length(e)
 end
 
 function append(l1, l2)
+	assert(list_p(l1))
+	assert(list_p(l2))
 	if null_p(l1) then
 		return l2
 	else
@@ -286,6 +294,7 @@ function read_list(r)
 		local c = r:peek()
 		assert(c ~= nil)
 		if c == ')' then
+			r:read()
 			break
 		end
 		table.insert(items, read(r))

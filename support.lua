@@ -56,31 +56,35 @@ function extend_environment(vars, vals, base_env)
 	end
 end
 function lookup_variable_value(var, env)
-	local env_loop = function(env)
-		local scan = function(vars, vals)
+	local env_loop
+	env_loop = function(env)
+		local scan
+		scan = function(vars, vals)
 			if null_p(vars) then
 				return env_loop(enclosing_environment, env)
 			elseif var == car(vars) then
 				return car(vals)
 			else
-				scan(cdr(vars), cdr(vals))
+				return scan(cdr(vars), cdr(vals))
 			end
 		end
 		if env == the_empty_environment then
 			error("Unbound variable " .. tostring(var))
 		else
 			frame = first_frame(env)
-			scan(frame_variables(frame), frame_values(frame))
+			return scan(frame_variables(frame), frame_values(frame))
 		end
 	end
-	env_loop(env)
+	return env_loop(env)
 end
 
 function set_variable_value(var, val, env)
-	local env_loop = function(env)
-		local scan = function(vars, vals)
+	local env_loop
+	env_loop = function(env)
+		local scan
+		scan = function(vars, vals)
 			if null_p(vars) then
-				return env_loop(enclosing_environment, env)
+				env_loop(enclosing_environment, env)
 			elseif var == car(vars) then
 				set_car(vals, val)
 			else
@@ -163,13 +167,13 @@ function announce_output(str)
 end
 function user_print(object)
 	if compound_procedure_p(object) then
-		print(list(
+		print(pretty(list(
 				Symbol.new('compound-procedure'),
 				procedure_parameters(object),
 				procedure_body(object),
-				Symbol.new('<procedure-env>')))
+				Symbol.new('<procedure-env>'))))
 	else
-		print(object)
+		print(pretty(object))
 	end
 end
 
@@ -177,7 +181,7 @@ function empty_arglist()
 	return nil
 end
 function adjoin_arg(arg, arglist)
-	append(arglist, list(arg))
+	return append(arglist, list(arg))
 end
 
 function last_operand_p(ops)

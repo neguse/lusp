@@ -4,15 +4,19 @@ require("support")
 
 -- stack
 the_stack = {}
+the_stack_size = 0
 function initialize_stack()
 	the_stack = {}
+	the_stack_size = 0
 end
 function save(e)
-	table.insert(the_stack, e)
+	the_stack_size = the_stack_size + 1
+	the_stack[the_stack_size] = e
 end
 function restore()
-	assert(#the_stack > 0)
-	return table.remove(the_stack)
+	assert(the_stack_size > 0)
+	the_stack_size = the_stack_size - 1
+	return the_stack[the_stack_size + 1]
 end
 
 -- translate from SICP ch5-eceval.scm.
