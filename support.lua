@@ -61,7 +61,7 @@ function lookup_variable_value(var, env)
 		local scan
 		scan = function(vars, vals)
 			if null_p(vars) then
-				return env_loop(enclosing_environment, env)
+				return env_loop(enclosing_environment(env))
 			elseif var == car(vars) then
 				return car(vals)
 			else
@@ -69,7 +69,7 @@ function lookup_variable_value(var, env)
 			end
 		end
 		if env == the_empty_environment then
-			error("Unbound variable " .. tostring(var))
+			return error("Unbound variable " .. tostring(var))
 		else
 			frame = first_frame(env)
 			return scan(frame_variables(frame), frame_values(frame))
@@ -84,7 +84,7 @@ function set_variable_value(var, val, env)
 		local scan
 		scan = function(vars, vals)
 			if null_p(vars) then
-				env_loop(enclosing_environment, env)
+				env_loop(enclosing_environment(env))
 			elseif var == car(vars) then
 				set_car(vals, val)
 			else
