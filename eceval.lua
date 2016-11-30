@@ -285,7 +285,7 @@ function ev_definition_1()
 	continue = restore()
 	env = restore()
 	unev = restore()
-	definition_variable(unev, val, env)
+	define_variable(unev, val, env)
 	val = ok
 	return continue
 end
