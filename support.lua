@@ -288,7 +288,7 @@ end
 function first_exp(seq)
 	return car(seq)
 end
-function rest_seq(seq)
+function rest_exps(seq)
 	return cdr(seq)
 end
 
